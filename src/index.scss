@@ -61,3 +61,9 @@ a.train-line {
 a.line.selected {
   background-color: rgb(248, 234, 190)
 }
+
+div.train-line-container{
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height 0.3s linear;
+}

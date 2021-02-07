@@ -33,7 +33,7 @@ let activateArrows = () => {
   })
 }
 
-let load_train_line_svg = (company_name, line_name, filter_line=null) => {
+let load_train_line_svg = (company_name, line_name, filter_line = null) => {
   let correction = corrections[company_name] && corrections[company_name][line_name];
   let svg = train_line_svg(geojson_lines, company_name, line_name, 640, correction);
   let viewer = document.querySelector('#svg-viewer');
@@ -55,7 +55,7 @@ let load_train_line_svg = (company_name, line_name, filter_line=null) => {
 
 let create_controls = () => {
   let companies = Object.keys(all_lines);
-  
+
   // force a few companies to tbe at the top.
   let manual_order_companies = [
     '東京地下鉄',
@@ -80,9 +80,21 @@ let create_controls = () => {
     d.setAttribute('href', `#${company}`);
     d.setAttribute('data-company', company);
     d.appendChild(document.createTextNode(company));
-    d.addEventListener('click', (e) => {
+    d.addEventListener('click', function (e) {
       let element = e.target;
       let company_name = element.getAttribute('data-company');
+
+      // Open adjacent Container
+      //    "this" is passed by using function
+      const linesContainer = this.nextElementSibling
+      const linesContainerChildren = linesContainer.children.length
+      const maxHeight = `${100 * linesContainerChildren}px` //The Max Height the menu will animate out to
+      if (linesContainer.style.maxHeight === maxHeight) {
+        linesContainer.style.maxHeight = "0px";
+      } else {
+        linesContainer.style.maxHeight = maxHeight;
+      }
+
       load_train_line_svg(company_name, null);
 
       _.map(document.querySelectorAll('.line'), o => o.classList.remove('selected'))
@@ -93,6 +105,11 @@ let create_controls = () => {
     controls.appendChild(d);
     var lines = Object.keys(all_lines[company]);
 
+    //Lines Wrapping Div
+    const lineDiv = document.createElement('div');
+    lineDiv.classList.add('train-line-container')
+    controls.appendChild(lineDiv)
+
     for (var line of lines) {
       var l = document.createElement('a');
       l.classList.add('train-line', 'line')
@@ -100,7 +117,7 @@ let create_controls = () => {
       l.setAttribute('data-line', line);
       l.setAttribute('data-company', company);
       l.appendChild(document.createTextNode(line));
-      l.addEventListener('click', (e) =>{
+      l.addEventListener('click', (e) => {
         let element = e.target;
         let line_name = element.getAttribute('data-line');
         let company_name = element.getAttribute('data-company');
@@ -110,7 +127,7 @@ let create_controls = () => {
         element.classList.add('selected')
         return true;
       });
-      controls.appendChild(l);
+      lineDiv.appendChild(l);
     }
   }
 };
